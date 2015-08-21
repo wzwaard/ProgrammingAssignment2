@@ -35,45 +35,38 @@ makeCacheMatrix <- function(x = matrix()) {
 ## Write a short comment describing this function
 
 cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+	## Return a matrix that is the inverse of 'x'
 	
-	mkinv<-makeCacheMatrix(x)
+	st_time<-Sys.time()
 
-	if (is.null(mkinv$getinv())) {
+	if (is.null(x$getinv())) {
 		print ("Creating a new inverse")
-		a <- Sys.time()
-		mkinv$setinv()
-		b <- Sys.time()
-		print (b-a)
+		x$setinv()
 	}
 	else {
 		print("Reading the inverse from cache")
 	}
+	
+	print (Sys.time() - st_time)
+	return(x$getinv())
 
-	if (is.null(mkinv$getinv())) {
-		print ("Creating a new inverse")
-		a <- Sys.time()
-		mkinv$setinv()
-		b <- Sys.time()
-		print (b-a)
-	}
-	else {
-		print("Reading the inverse from cache")
-		a <- Sys.time()
-		b <- Sys.time()
-		print (b-a)
-	}
-
-	mkinv$getinv()
 }
 
 ## Define the number of columns and rows
-nr_row_cols <- 1500
+nr_row_cols <- 1000
 
 ## Create a square matrix with random values
 r <- rnorm(nr_row_cols^2)
-mymatrix <- matrix(r, nr_row_cols, nr_row_cols)
+mymatrix <- makeCacheMatrix(matrix(r, nr_row_cols, nr_row_cols))
 
-## Get the inverse, both by creating it and getting it from cache.
-inversematrix=cacheSolve(mymatrix)
+## Get the inverse (Create it)
+inversematrix_create<-cacheSolve(mymatrix)
+
+## Get the inverse (Get it from cache)
+inversematrix_cache<-cacheSolve(mymatrix)
+
+## Check the results; they should be equal
+str(inversematrix_create)
+str(inversematrix_cache)
+
 
